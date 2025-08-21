@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en-CA" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Gen Z Trading — Mockup</title>
+  <meta name="color-scheme" content="dark light" />
+  <style>
+    /* ========= CSS RESET / BASE ========= */
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family: ui-sans-serif, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg);
+      color: var(--text);
+      line-height:1.35;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    :root{
+      /* Dark theme (default) */
+      --bg:#0b0c10;
+      --card:#12131a;
+      --muted:#9aa3b2;
+      --text:#f5f7fa;
+      --elev-1:rgba(255,255,255,0.06);
+      --elev-2:rgba(255,255,255,0.12);
+      --brand:#e41f2b;           /* institutional red nod (CIBC-adjacent) */
+      --accent:#5ef1b3;          /* neon mint */
+      --accent-2:#6ea8ff;        /* electric blue */
+      --accent-3:#ffd166;        /* sunny */
+      --positive:#22c55e;
+      --negative:#ef4444;
+      --warning:#f59e0b;
+      --chip:#1b1d27;
+      --focus: 0 0 0 3px rgba(110,168,255,.45);
+      --radius:14px;
+      --radius-sm:10px;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    [data-theme="light"]{
+      --bg:#ffffff; --card:#f4f6fb; --text:#10131a; --muted:#5c6572;
+      --elev-1:rgba(0,0,0,0.06); --elev-2:rgba(0,0,0,0.1);
+      --brand:#b60c16; --accent:#058f67; --accent-2:#0a63ff; --accent-3:#e19a00;
+      --chip:#ffffff; --shadow:0 8px 18px rgba(0,0,0,.08);
+    }
+
+    /* Motion safety */
+    @media (prefers-reduced-motion: reduce){
+      *{animation:none !important; transition:none !important; scroll-behavior:auto !important}
+    }
+
+    /* ========= LAYOUT ========= */
+    .app{
+      min-height:100dvh;
+      display:grid;
+      grid-template-rows: auto auto 1fr 64px;
+      gap:12px;
+      padding-bottom:64px; /* space for fixed nav on iOS safe area */
+    }
+    header{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.4) blur(12px);
+      background: color-mix(in oklab, var(--bg) 85%, transparent);
+      border-bottom:1px solid var(--elev-1);
+    }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px calc(14px - env(safe-area-inset-bottom)) 16px;
+      gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:.2px}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent)}
+    .slogan{font-size:12px;color:var(--muted)}
+    .actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+    .btn, .chip{
+      border:1px solid var(--elev-1); background:var(--chip); color:var(--text);
+      padding:10px 12px; border-radius:999px; font-size:13px; font-weight:700; cursor:pointer;
+      transition:transform .15s ease, background .2s ease, border-color .2s ease;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn.primary{background:linear-gradient(135deg,var(--brand),var(--accent-2)); border-color:transparent; color:white}
+    .btn.ghost{background:transparent}
+    .toggle{
+      display:inline-flex; border-radius:999px; background:var(--card); border:1px solid var(--elev-1); overflow:hidden;
+    }
+    .toggle button{border:0;background:transparent;padding:8px 12px;color:var(--muted);font-weight:700;cursor:pointer}
+    .toggle button[aria-pressed="true"]{color:var(--text); background:var(--elev-2)}
+
+    /* FX & Movers ticker */
+    .ticker{
+      position:sticky; top:52px; z-index:15;
+      background: color-mix(in oklab, var(--bg) 90%, transparent);
+      border-bottom:1px solid var(--elev-1);
+      padding:8px 0;
+      overflow:hidden;
+    }
+    .ticker-track{
+      display:flex; gap:18px; white-space:nowrap; will-change:transform;
+      animation: slide 22s linear infinite;
+      padding-left:16px;
+    }
+    .tick{display:inline-flex; gap:8px; align-items:center; padding:4px 10px; border-radius:999px; background:var(--chip); border:1px solid var(--elev-1); font-size:12px; font-weight:800}
+    .tick .up{color:var(--positive)} .tick .down{color:var(--negative)}
+    @keyframes slide{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+
+    main{padding:14px 14px 0 14px}
+    .section{display:none; animation:fade .25s ease}
+    .section.active{display:block}
+    @keyframes fade{from{opacity:.6; transform:translateY(4px)} to{opacity:1; transform:translateY(0)}}
+
+    .grid{display:grid; gap:12px}
+    .cards{display:grid; gap:12px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--elev-1);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+    .kpis{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .kpi{background:linear-gradient(180deg, color-mix(in oklab, var(--chip) 90%, transparent), transparent);
+      border:1px solid var(--elev-1); padding:12px; border-radius:var(--radius-sm)}
+    .kpi h3{margin:0; font-size:12px; color:var(--muted)}
+    .kpi .val{font-size:22px; font-weight:800}
+    .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border-radius:999px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-3)); color:#111; font-weight:900; font-size:12px}
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .row.wrap{flex-wrap:wrap}
+    .meta{color:var(--muted); font-size:12px}
+
+    /* Holdings list */
+    .list{display:flex; flex-direction:column; gap:10px}
+    .item{
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      border:1px solid var(--elev-1); background: var(--chip); padding:10px; border-radius:12px;
+    }
+    .ticker{font-weight:800}
+    .chg.up{color:var(--positive)} .chg.down{color:var(--negative)}
+    .inline-actions{display:flex; gap:8px; align-items:center}
+
+    /* Badges */
+    .badges{display:flex; gap:8px; overflow:auto; padding-bottom:2px}
+    .badge{
+      display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+      padding:8px 10px; border-radius:999px; background:linear-gradient(135deg,var(--accent-2),var(--accent));
+      color:#0b0c10; font-weight:900; font-size:12px; border:1px solid transparent;
+    }
+
+    /* Community feed */
+    .feed{display:grid; gap:12px}
+    .post{
+      border-radius:18px; overflow:hidden; border:1px solid var(--elev-1); background:var(--card);
+    }
+    .post-header, .post-footer{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px}
+    .post-body{padding:0}
+    .author{display:flex; gap:10px; align-items:center}
+    .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent-2),var(--accent))}
+    .handle{font-weight:800}
+    .hashtags{display:flex; gap:8px; overflow:auto}
+    .hashtag{background:var(--chip); border:1px solid var(--elev-1); padding:6px 10px; border-radius:999px; font-weight:700; color:var(--muted)}
+    .post-hero{
+      aspect-ratio: 16/9; background:
+        radial-gradient(120% 120% at 0% 100%, color-mix(in oklab, var(--accent) 40%, transparent), transparent 70%),
+        radial-gradient(120% 120% at 100% 0%, color-mix(in oklab, var(--accent-2) 40%, transparent), transparent 70%),
+        linear-gradient(135deg, color-mix(in oklab, var(--brand) 20%, transparent), transparent);
+      display:flex; align-items:flex-end; justify-content:flex-start; padding:14px;
+    }
+    .post-hero h4{margin:0; font-size:16px; font-weight:900; text-shadow:0 2px 10px rgba(0,0,0,.4)}
+    .reactions{display:flex; gap:8px}
+    .reaction{
+      display:inline-flex; align-items:center; gap:6px; padding:8px 10px; border-radius:999px; background:var(--chip);
+      border:1px solid var(--elev-1); cursor:pointer; user-select:none; font-weight:800;
+    }
+    .reaction[aria-pressed="true"]{outline:var(--focus); border-color:var(--accent-2)}
+    .commentbox{padding:12px; display:flex; gap:8px; align-items:center}
+    .commentbox input{
+      flex:1; border-radius:999px; border:1px solid var(--elev-1); padding:10px 12px; background:var(--chip); color:var(--text)
+    }
+    .comment{padding:12px; border-top:1px dashed var(--elev-1); color:var(--muted); font-size:14px}
+
+    /* Charts (custom canvas, offline) */
+    .chart-wrap{padding:10px; border-radius:12px; background:var(--chip); border:1px solid var(--elev-1)}
+    canvas{max-width:100%; height:auto; display:block}
+
+    /* Bottom Nav */
+    nav{
+      position:fixed; bottom:0; left:0; right:0; z-index:30;
+      padding:8px max(10px, env(safe-area-inset-left)) 8px max(10px, env(safe-area-inset-right));
+      background: color-mix(in oklab, var(--bg) 90%, transparent);
+      border-top:1px solid var(--elev-1); backdrop-filter:saturate(1.4) blur(12px);
+    }
+    .nav{display:grid; grid-template-columns:repeat(5,1fr); gap:8px;}
+    .nav button{
+      background:transparent; border:0; color:var(--muted); padding:8px 6px; border-radius:12px; font-size:11px; font-weight:800;
+      display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer;
+    }
+    .nav button[aria-current="page"]{color:var(--text); background:var(--elev-1)}
+    .nav svg{width:22px;height:22px}
+
+    /* Modal (deal ticket) */
+    .modal{position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.45); padding:20px}
+    .modal.show{display:flex}
+    .sheet{background:var(--card); border:1px solid var(--elev-1); border-radius:16px; box-shadow:var(--shadow); width:min(520px, 100%); padding:16px}
+    .sheet h3{margin:0 0 8px 0}
+    .sheet .row{align-items:flex-end}
+    .field{display:flex; flex-direction:column; gap:6px; flex:1}
+    .field input{padding:10px 12px; border-radius:10px; border:1px solid var(--elev-1); background:var(--chip); color:var(--text)}
+    .radio{display:flex; gap:8px}
+    .radio .btn{padding:8px 12px}
+    .helper{font-size:12px; color:var(--muted)}
+    .sheet .actions{justify-content:flex-end}
+    .error{color:var(--negative); font-size:12px; margin-top:6px; display:none}
+    .error.show{display:block}
+
+    /* Toast */
+    .toast{position:fixed; left:50%; bottom:80px; transform:translateX(-50%); z-index:50; display:none}
+    .toast.show{display:block}
+    .toast .chip{background:linear-gradient(135deg,var(--accent),var(--accent-3)); color:#111}
+
+    /* Desktop tweaks */
+    @media (min-width:768px){
+      main{padding:18px; max-width:960px; margin:0 auto}
+      .kpis{grid-template-columns:repeat(4,1fr)}
+      .cards.two-col{grid-template-columns:1fr 1fr}
+    }
+
+    /* Utilities */
+    .sr-only{position:absolute!important; height:1px;width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap}
+    .tagline{font-weight:900; font-size:18px}
+    .micro{font-size:12px; color:var(--muted)}
+    .green{color:var(--positive)} .red{color:var(--negative)}
+    .dim{opacity:.65}
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ===== Top / Header ===== -->
+  <header>
+    <div class="topbar">
+      <div class="brand" aria-label="App brand">
+        <span class="dot" aria-hidden="true"></span>
+        <div>
+          GenZ Trade
+          <div class="slogan" aria-hidden="true">Your money, your rules.</div>
+        </div>
+      </div>
+      <div class="actions">
+        <!-- Silent currency toggle -->
+        <div class="toggle" role="group" aria-label="Currency">
+          <button id="cadBtn" aria-pressed="true" title="Prefer CAD">CAD</button>
+          <button id="usdBtn" aria-pressed="false" title="Prefer USD">USD</button>
+        </div>
+        <!-- Theme -->
+        <div class="toggle" role="group" aria-label="Theme">
+          <button id="lightBtn" aria-pressed="false" title="Light">☀️</button>
+          <button id="darkBtn" aria-pressed="true" title="Dark">🌙</button>
+        </div>
+        <button class="btn primary">Open Account</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== FX & Movers Ticker ===== -->
+  <div class="ticker" aria-live="polite">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+
+  <!-- ===== Main ===== -->
+  <main id="content" tabindex="-1">
+    <!-- ===== Dashboard / Landing ===== -->
+    <section class="section active" id="home" aria-labelledby="home-title">
+      <h2 id="home-title" class="sr-only">Dashboard</h2>
+
+      <div class="cards grid">
+        <div class="card">
+          <div class="row wrap" style="gap:10px 12px">
+            <div class="tagline">Take control of your money 💸</div>
+            <span class="pill" aria-label="Low fees">Low fees • Trade smart, not hard</span>
+          </div>
+          <div class="kpis" style="margin-top:10px">
+            <div class="kpi" aria-live="polite">
+              <h3>Total Portfolio (CAD)</h3>
+              <div class="val" id="pfCad">C$ 0.00</div>
+              <div class="meta green">Demo totals update on trades</div>
+            </div>
+            <div class="kpi" aria-live="polite">
+              <h3>Total Portfolio (USD)</h3>
+              <div class="val" id="pfUsd">US$ 0.00</div>
+              <div class="meta green">FX-aware (static rate)</div>
+            </div>
+            <div class="kpi">
+              <h3>Fees this month</h3>
+              <div class="val">C$ 1.20</div>
+              <div class="meta">We keep it low 🔒</div>
+            </div>
+            <div class="kpi">
+              <h3>Streak</h3>
+              <div class="val">7 days</div>
+              <div class="meta">Steady Stacker 📊</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <strong>Market Quick View</strong>
+            <div class="toggle" role="group" aria-label="Asset filter">
+              <button class="tabAsset" data-kind="all" aria-pressed="true">All</button>
+              <button class="tabAsset" data-kind="etf" aria-pressed="false">ETFs</button>
+              <button class="tabAsset" data-kind="crypto" aria-pressed="false">Crypto</button>
+              <button class="tabAsset" data-kind="stock" aria-pressed="false">Stocks</button>
+            </div>
+          </div>
+          <div class="list" id="quickList" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <strong>Diversification (Demo)</strong>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="pieChart" width="560" height="360" aria-label="Portfolio diversification chart" role="img"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <strong>Badges</strong>
+            <span class="micro">Flex your strategy</span>
+          </div>
+          <div class="badges" style="margin-top:8px" aria-label="Your badges">
+            <span class="badge" title="Multiple asset classes">Super Diversified 🌈</span>
+            <span class="badge" title="High-volatility moves">Big Mover ⚡</span>
+            <span class="badge" title="Long-term holder">Diamond Hands 💎🙌</span>
+            <span class="badge" title="Riding trends">Trend Rider 📈</span>
+            <span class="badge" title="Gen Z slang vibe">Diversi-Flex 💪</span>
+            <span class="badge" title="To The Moon">To The Moon 🚀</span>
+            <span class="badge" title="Steady contributions">Steady Stacker 📊</span>
+            <span class="badge" title="Original gangster of trading">OG Trader 🧢</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Portfolio ===== -->
+    <section class="section" id="portfolio" aria-labelledby="portfolio-title">
+      <h2 id="portfolio-title" class="sr-only">Portfolio</h2>
+
+      <div class="cards two-col">
+        <div class="card">
+          <div class="row">
+            <strong>Your Holdings</strong>
+            <span class="micro">Totals include CAD & USD</span>
+          </div>
+          <div class="kpis" style="margin-top:10px">
+            <div class="kpi">
+              <h3>Total Gain/Loss (CAD)</h3>
+              <div class="val green">C$ +1,482.90</div>
+              <div class="meta">+6.4% since start</div>
+            </div>
+            <div class="kpi">
+              <h3>Total Gain/Loss (USD)</h3>
+              <div class="val green">US$ +1,096.70</div>
+              <div class="meta">FX-aware tracking</div>
+            </div>
+          </div>
+
+          <div class="list" id="holdings" style="margin-top:12px"></div>
+        </div>
+
+        <div class="card">
+          <div class="row">
+            <strong>Breakdown</strong>
+            <div class="toggle" role="group" aria-label="Chart type">
+              <button class="chartTab" data-chart="bar" aria-pressed="true">Bar</button>
+              <button class="chartTab" data-chart="bar2" aria-pressed="false">Alt Bar</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="barChart" width="560" height="360" aria-label="Holdings bar chart" role="img"></canvas>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="row">
+              <strong>Badge Progress</strong>
+              <span class="micro">Keep stacking to unlock more</span>
+            </div>
+            <div class="badges" style="margin-top:8px">
+              <span class="badge">Super Diversified 🌈</span>
+              <span class="badge">Diamond Hands 💎🙌</span>
+              <span class="badge">Trend Rider 📈</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Community ===== -->
+    <section class="section" id="community" aria-labelledby="community-title">
+      <h2 id="community-title" class="sr-only">Community</h2>
+
+      <div class="card">
+        <div class="row">
+          <strong>Trending</strong>
+          <div class="hashtags" role="list" aria-label="Trending hashtags">
+            <button class="hashtag" data-hash="#CryptoHustle">#CryptoHustle</button>
+            <button class="hashtag" data-hash="#ETFStrong">#ETFStrong</button>
+            <button class="hashtag" data-hash="#CADvsUSD">#CADvsUSD</button>
+            <button class="hashtag" data-hash="#RoboVHuman">#RoboVHuman</button>
+            <button class="hashtag" data-hash="#Dividends">#Dividends</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <strong>Community Disclaimer</strong>
+        <p class="micro">
+          Posts reflect users’ opinions only and are <strong>not</strong> investment advice. Not affiliated with or endorsed as CIBC advice. Demo UI; prices are illustrative.
+        </p>
+      </div>
+
+      <div class="feed" id="feed" aria-live="polite" aria-busy="false"></div>
+    </section>
+
+    <!-- ===== Badges ===== -->
+    <section class="section" id="badges" aria-labelledby="badges-title">
+      <h2 id="badges-title" class="sr-only">Gamification & Badges</h2>
+
+      <div class="card">
+        <div class="row">
+          <strong>Your Badge Wall</strong>
+          <span class="micro">Flex responsibly 😉</span>
+        </div>
+        <div class="badges" style="margin-top:10px">
+          <span class="badge">Diversi-Flex 💪</span>
+          <span class="badge">To The Moon 🚀</span>
+          <span class="badge">Steady Stacker 📊</span>
+          <span class="badge">OG Trader 🧢</span>
+          <span class="badge">Big Mover ⚡</span>
+          <span class="badge">Diamond Hands 💎🙌</span>
+        </div>
+        <div class="micro" style="margin-top:10px">
+          Earn badges by diversifying, holding long term, contributing regularly, and engaging in the Community.
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Profile (stub) ===== -->
+    <section class="section" id="profile" aria-labelledby="profile-title">
+      <h2 id="profile-title" class="sr-only">Profile</h2>
+      <div class="cards">
+        <div class="card">
+          <div class="row">
+            <div class="author">
+              <div class="avatar" role="img" aria-label="User avatar"></div>
+              <div>
+                <div class="handle">@you</div>
+                <div class="micro">Member since 2025 • Toronto</div>
+              </div>
+            </div>
+            <button class="btn ghost">Edit</button>
+          </div>
+          <div class="badges" style="margin-top:12px">
+            <span class="badge">Steady Stacker 📊</span>
+            <span class="badge">Super Diversified 🌈</span>
+          </div>
+        </div>
+        <div class="card">
+          <strong>Disclosures</strong>
+          <p class="micro">
+            Demo UI. Prices are illustrative. Values shown in CAD and USD by default.
+            Accessibility: high contrast, keyboard navigable, reduced motion supported.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Bottom Nav ===== -->
+  <nav aria-label="Primary">
+    <div class="nav" role="tablist">
+      <button class="navbtn" data-target="home" aria-current="page" role="tab" aria-controls="home">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-10.5Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Home
+      </button>
+      <button class="navbtn" data-target="portfolio" role="tab" aria-controls="portfolio">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Portfolio
+      </button>
+      <button class="navbtn" data-target="community" role="tab" aria-controls="community">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 12a9 9 0 1 1 16.2 4.5l1.8 3-3.5-1.3A9 9 0 0 1 3 12Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Community
+      </button>
+      <button class="navbtn" data-target="badges" role="tab" aria-controls="badges">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l2.6 5.4L20.7 8l-4.4 4.3L17.4 20 12 16.9 6.6 20l1.1-7.7L3.3 8l6.1-.6L12 2Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Badges
+      </button>
+      <button class="navbtn" data-target="profile" role="tab" aria-controls="profile">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm8 9a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        Profile
+      </button>
+    </div>
+  </nav>
+</div>
+
+<!-- ===== Modal (Trade) ===== -->
+<div class="modal" id="tradeModal" aria-modal="true" role="dialog" aria-labelledby="tradeTitle">
+  <div class="sheet">
+    <div class="row">
+      <h3 id="tradeTitle">Trade</h3>
+      <button id="closeModal" class="btn ghost" aria-label="Close">✕</button>
+    </div>
+    <div class="helper" id="tradeSub">Only sample assets supported in this demo.</div>
+
+    <div class="row" style="margin-top:10px">
+      <div class="field">
+        <label class="micro">Symbol</label>
+        <div id="tradeSym" style="font-weight:800">—</div>
+      </div>
+      <div class="field">
+        <label class="micro">Side</label>
+        <div class="radio" role="group" aria-label="Side">
+          <button class="btn" id="sideBuy" aria-pressed="true">Buy</button>
+          <button class="btn" id="sideSell" aria-pressed="false">Sell</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="qty" class="micro">Quantity</label>
+        <input id="qty" type="number" min="0" step="0.01" value="0" inputmode="decimal" />
+      </div>
+      <div class="field">
+        <label class="micro">Unit Price</label>
+        <div id="unitPrice">C$ — • US$ —</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:8px">
+      <div class="helper" id="tradeHint">Tip: Tap “Max” to sell your full position.</div>
+      <div class="inline-actions">
+        <button class="btn ghost" id="maxBtn">Max</button>
+        <button class="btn primary" id="confirmBtn">Confirm</button>
+      </div>
+    </div>
+    <div class="error" id="tradeError">Error</div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><span class="chip">Trade executed ✅</span></div>
+
+<script>
+  /* ========= Helpers ========= */
+  const root = document.documentElement;
+  const getVar = n => getComputedStyle(root).getPropertyValue(n).trim();
+  const fmtCAD = n => `C$ ${Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+  const fmtUSD = n => `US$ ${Number(n).toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+  /* ========= Theme toggle ========= */
+  const lightBtn = document.getElementById('lightBtn');
+  const darkBtn  = document.getElementById('darkBtn');
+  function setTheme(mode){
+    root.setAttribute('data-theme', mode);
+    lightBtn.setAttribute('aria-pressed', mode==='light');
+    darkBtn.setAttribute('aria-pressed', mode==='dark');
+    localStorage.setItem('theme', mode);
+    drawAllCharts(); // recolour canvases
+  }
+  lightBtn.addEventListener('click', ()=>setTheme('light'));
+  darkBtn.addEventListener('click', ()=>setTheme('dark'));
+  const savedTheme = localStorage.getItem('theme');
+  if(savedTheme) setTheme(savedTheme);
+
+  /* ========= Currency preference (init later) ========= */
+  let prefer = localStorage.getItem('prefer') || 'CAD';
+  const cadBtn = document.getElementById('cadBtn');
+  const usdBtn = document.getElementById('usdBtn');
+  function setPrefer(p){
+    prefer = p;
+    cadBtn.setAttribute('aria-pressed', p==='CAD');
+    usdBtn.setAttribute('aria-pressed', p==='USD');
+    localStorage.setItem('prefer', p);
+    if (typeof renderQuick==='function') renderQuick(currentKind);
+    if (typeof renderHoldings==='function') renderHoldings();
+    if (typeof renderTicker==='function') renderTicker();
+    if (typeof drawBar==='function') drawBar();
+  }
+  cadBtn.addEventListener('click', ()=>setPrefer('CAD'));
+  usdBtn.addEventListener('click', ()=>setPrefer('USD'));
+
+  /* ========= Bottom nav / router ========= */
+  const sections = [...document.querySelectorAll('.section')];
+  const navBtns = [...document.querySelectorAll('.navbtn')];
+  function activate(id){
+    sections.forEach(s => s.classList.toggle('active', s.id === id));
+    navBtns.forEach(b => b.setAttribute('aria-current', b.dataset.target === id ? 'page' : 'false'));
+    history.replaceState(null, '', `#${id}`);
+    document.getElementById(id).focus({preventScroll:true});
+  }
+  navBtns.forEach(b => b.addEventListener('click', () => activate(b.dataset.target)));
+  if(location.hash){
+    const dest = location.hash.replace('#','');
+    if(document.getElementById(dest)) activate(dest);
+  }
+
+  /* ========= Demo data ========= */
+  const FX = { pair:'USD/CAD', rate:1.31, delta:+0.05 }; // static demo FX
+  const quickData = [
+    {type:'etf',   sym:'XEQT.TO', name:'iShares All-Eq', cad: 36.92, usd: 36.92/FX.rate, chg:+1.9},
+    {type:'crypto',sym:'BTC',     name:'Bitcoin',        cad: 99320, usd: 99320/FX.rate, chg:+3.2},
+    {type:'stock', sym:'SHOP',    name:'Shopify',        cad: 104.12,usd: 104.12/FX.rate, chg:-1.1},
+    {type:'etf',   sym:'ZSP.TO',  name:'S&P 500 CAD',    cad: 114.51,usd: 114.51/FX.rate, chg:+0.8},
+    {type:'crypto',sym:'ETH',     name:'Ethereum',       cad: 3890,  usd: 3890/FX.rate,   chg:+4.5},
+    {type:'stock', sym:'RY',      name:'Royal Bank',     cad: 142.30,usd: 142.30/FX.rate, chg:+0.4}
+  ];
+
+  const holdingsData = [
+    {type:'etf',   sym:'XEQT.TO', qty:180, cad: 6645, usd: 6645/FX.rate, chg:+1.1},
+    {type:'stock', sym:'SHOP',    qty:40,  cad: 4165, usd: 4165/FX.rate, chg:-0.9},
+    {type:'crypto',sym:'BTC',     qty:0.18,cad: 17877,usd: 17877/FX.rate, chg:+3.2},
+    {type:'crypto',sym:'ETH',     qty:2.5, cad:  9725,usd:  9725/FX.rate, chg:+4.5},
+    {type:'stock', sym:'RY',      qty:20,  cad:  2846,usd:  2846/FX.rate, chg:+0.4},
+  ];
+  holdingsData.forEach(h=>{
+    h.unitCad = h.cad / h.qty;
+    h.unitUsd = h.usd / h.qty;
+  });
+
+  /* ========= FX & Movers Ticker ========= */
+  const tickerTrack = document.getElementById('tickerTrack');
+  function renderTicker(){
+    const items = [];
+    const fxDir = FX.delta>=0 ? 'up' : 'down';
+    items.push(`<span class="tick">💱 <strong>${FX.pair}</strong> ${FX.rate.toFixed(2)} <span class="${fxDir}">${FX.delta>=0?'+':''}${FX.delta.toFixed(2)}%</span></span>`);
+    const movers = [...quickData].sort((a,b)=>Math.abs(b.chg)-Math.abs(a.chg)).slice(0,5);
+    movers.forEach(m=>{
+      const price = prefer==='CAD' ? fmtCAD(m.cad) : fmtUSD(m.usd);
+      const dir = m.chg>=0?'up':'down';
+      items.push(`<span class="tick">${m.sym} ${price} <span class="${dir}">${m.chg>=0?'+':''}${m.chg}%</span></span>`);
+    });
+    tickerTrack.innerHTML = items.join(' ') + ' ' + items.join(' ');
+  }
+
+  /* ========= Quick View ========= */
+  const quickList = document.getElementById('quickList');
+  const tabBtns = [...document.querySelectorAll('.tabAsset')];
+  let currentKind = 'all';
+
+  function rowPrice(primary, secondary){
+    return `<div><strong>${primary}</strong> <span class="micro dim">• ${secondary}</span></div>`;
+  }
+
+  function renderQuick(kind='all'){
+    currentKind = kind;
+    quickList.innerHTML = '';
+    quickData
+      .filter(x => kind==='all' ? true : x.type===kind)
+      .forEach(x => {
+        const el = document.createElement('div');
+        el.className = 'item';
+        const primary = prefer==='CAD' ? fmtCAD(x.cad) : fmtUSD(x.usd);
+        const secondary = prefer==='CAD' ? fmtUSD(x.usd) : fmtCAD(x.cad);
+        el.innerHTML = `
+          <div>
+            <div class="ticker">${x.sym} <span class="micro">(${x.type.toUpperCase()})</span></div>
+            <div class="micro">${x.name}</div>
+          </div>
+          <div class="inline-actions" style="margin-left:auto">
+            <div style="text-align:right">
+              ${rowPrice(primary, secondary)}
+              <div class="chg ${x.chg>=0?'up':'down'}">${x.chg>=0?'+':''}${x.chg}% today</div>
+            </div>
+          </div>
+        `;
+        quickList.appendChild(el);
+      });
+  }
+  tabBtns.forEach(b=>{
+    b.addEventListener('click',()=>{
+      tabBtns.forEach(t=>t.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');
+      renderQuick(b.dataset.kind);
+    });
+  });
+
+  /* ========= Holdings ========= */
+  const holdList = document.getElementById('holdings');
+  function updatePortfolioTotals(){
+    const tCad = holdingsData.reduce((s,h)=>s+h.cad,0);
+    const tUsd = holdingsData.reduce((s,h)=>s+h.usd,0);
+    document.getElementById('pfCad').textContent = fmtCAD(tCad);
+    document.getElementById('pfUsd').textContent = fmtUSD(tUsd);
+  }
+  function renderHoldings(){
+    holdList.innerHTML='';
+    holdingsData.forEach(h=>{
+      const pPrimary = prefer==='CAD' ? fmtCAD(h.cad) : fmtUSD(h.usd);
+      const pSecondary = prefer==='CAD' ? fmtUSD(h.usd) : fmtCAD(h.cad);
+      const el = document.createElement('div');
+      el.className='item';
+      el.innerHTML=`
+        <div>
+          <div class="ticker">${h.sym} <span class="micro">(${h.qty} units)</span></div>
+          <div class="micro">${h.type.toUpperCase()}</div>
+        </div>
+        <div style="text-align:right">
+          ${rowPrice(pPrimary, pSecondary)}
+          <div class="chg ${h.chg>=0?'up':'down'}">${h.chg>=0?'+':''}${h.chg}% today</div>
+        </div>
+        <div class="inline-actions">
+          <button class="btn ghost tradeBtn" data-sym="${h.sym}">Trade</button>
+        </div>
+      `;
+      holdList.appendChild(el);
+    });
+    holdList.querySelectorAll('.tradeBtn').forEach(btn=>{
+      btn.addEventListener('click', ()=>openTrade(btn.dataset.sym));
+    });
+    updatePortfolioTotals();
+    drawAllCharts();
+  }
+
+  /* ========= Charts (custom canvas) ========= */
+  const pieCanvas = document.getElementById('pieChart');
+  const barCanvas = document.getElementById('barChart');
+
+  function clearCanvas(c){
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    return ctx;
+  }
+
+  function drawDonut(canvas, labels, values, colors){
+    const ctx = clearCanvas(canvas);
+    const W = canvas.width, H = canvas.height;
+    const cx = W/2, cy = H/2, r = Math.min(W,H)*0.36, inner = r*0.58;
+
+    const total = values.reduce((a,b)=>a+b,0) || 1;
+    let start = -Math.PI/2;
+    values.forEach((v,i)=>{
+      const ang = (v/total) * Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,start,start+ang,false);
+      ctx.closePath();
+      ctx.fillStyle = colors[i];
+      ctx.fill();
+      start += ang;
+    });
+    ctx.beginPath();
+    ctx.arc(cx,cy,inner,0,Math.PI*2);
+    ctx.fillStyle = getVar('--chip') || '#1b1d27';
+    ctx.fill();
+
+    ctx.fillStyle = getVar('--text') || '#fff';
+    ctx.font = '700 16px ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Diversification', cx, cy - 4);
+    ctx.font = '700 12px ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+    ctx.fillStyle = getVar('--muted') || '#9aa3b2';
+    ctx.fillText(labels.map((l,i)=>`${l}: ${Math.round(values[i]/total*100)}%`).join('  •  '), cx, cy + 18);
+  }
+
+  function drawBar(){
+    if(!barCanvas) return;
+    const ctx = clearCanvas(barCanvas);
+    const W = barCanvas.width, H = barCanvas.height;
+    const padding = 42;
+    const labels = holdingsData.map(h=>h.sym);
+    const values = holdingsData.map(h=> h.cad); // CAD breakdown
+    const maxV = Math.max(...values) * 1.2 || 1;
+    const bw = (W - padding*2) / (values.length*1.4);
+    const gap = bw*0.4;
+    const x0 = padding, y0 = H - padding;
+
+    ctx.strokeStyle = getVar('--elev-1') || 'rgba(255,255,255,.06)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x0, padding);
+    ctx.lineTo(x0, y0);
+    ctx.lineTo(W - padding, y0);
+    ctx.stroke();
+
+    ctx.fillStyle = getVar('--accent-2') || '#6ea8ff';
+    values.forEach((v,i)=>{
+      const x = x0 + i*(bw+gap) + gap;
+      const h = (v/maxV) * (H - padding*2);
+      ctx.fillRect(x, y0 - h, bw, h);
+      ctx.fillStyle = getVar('--muted') || '#9aa3b2';
+      ctx.font = '700 11px ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], x + bw/2, y0 + 14);
+      ctx.fillStyle = getVar('--accent-3') || '#ffd166';
+      ctx.font = '700 11px ui-sans-serif,-apple-system,Segoe UI,Roboto,Helvetica,Arial';
+      ctx.fillText(fmtCAD(values[i]), x + bw/2, y0 - h - 6);
+      ctx.fillStyle = getVar('--accent-2') || '#6ea8ff';
+    });
+  }
+
+  function drawAllCharts(){
+    const sumByType = {ETF:0,Crypto:0,Stocks:0};
+    holdingsData.forEach(h=>{
+      const cad = h.cad;
+      if(h.type==='etf') sumByType.ETF += cad;
+      else if(h.type==='crypto') sumByType.Crypto += cad;
+      else sumByType.Stocks += cad;
+    });
+    const labels = ['ETFs','Crypto','Stocks'];
+    const vals = [sumByType.ETF, sumByType.Crypto, sumByType.Stocks];
+    const colors = [getVar('--accent-2')||'#6ea8ff', getVar('--accent')||'#5ef1b3', getVar('--accent-3')||'#ffd166'];
+    drawDonut(pieCanvas, labels, vals, colors);
+    drawBar();
+  }
+
+  // Chart tabs
+  const chartTabs = [...document.querySelectorAll('.chartTab')];
+  chartTabs.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      chartTabs.forEach(t=>t.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      drawBar();
+    });
+  });
+
+  /* ========= Community ========= */
+  const hotOrMild = () => (Math.random() < 0.55 ? '🔥 Hot take:' : '🧊 Mild take:');
+  const posts = [
+    {
+      user:'@analyst_amy', time:'2h', title:`${hotOrMild()} ETH gas fees trending down — Layer 2s printing`,
+      text:'Rotating part of my BTC stack into ETH for the next merge-adjacent catalysts. Not advice.',
+      tags:['#CryptoHustle','#CADvsUSD'], reactions:{'🔥':42,'🚀':64,'💎🙌':12,'📉':3}, comments:[]
+    },
+    {
+      user:'@etf_otto', time:'4h', title:`${hotOrMild()} XEQT + ZAG is an underrated pair`,
+      text:'All-in-one + bonds to dampen drawdowns. Canadian simplicity, global exposure.',
+      tags:['#ETFStrong'], reactions:{'🔥':18,'🚀':9,'💎🙌':27,'📉':1}, comments:[]
+    },
+    {
+      user:'@swing_j', time:'1d', title:`${hotOrMild()} SHOP earnings: implied move looks spicy ⚡`,
+      text:'Watching IV crush potential. Small position, tight risk.',
+      tags:['#Stocks','#Trend'], reactions:{'🔥':33,'🚀':22,'💎🙌':5,'📉':7}, comments:[]
+    }
+  ];
+  const feed = document.getElementById('feed');
+
+  function postTemplate(p, idx){
+    const r = p.reactions;
+    const commentsHtml = p.comments.length
+      ? p.comments.map(c=>`<div class="comment"><strong>${c.user}:</strong> ${c.text}</div>`).join('')
+      : `<div class="comment" data-empty="true">Be the first to comment 🗣️</div>`;
+    return `
+      <article class="post" aria-label="Post by ${p.user}">
+        <div class="post-header">
+          <div class="author">
+            <div class="avatar" aria-hidden="true"></div>
+            <div>
+              <div class="handle">${p.user}</div>
+              <div class="micro">${p.time} • Analyst</div>
+            </div>
+          </div>
+          <div class="hashtags" role="list">
+            ${p.tags.map(t=>`<span class="hashtag" role="listitem">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div class="post-body">
+          <div class="post-hero"><h4>${p.title}</h4></div>
+          <div style="padding:12px">${p.text} <span class="micro dim">(opinions, not CIBC advice)</span></div>
+        </div>
+        <div class="post-footer">
+          <div class="reactions" role="group" aria-label="Reactions">
+            ${Object.entries(r).map(([emoji,count])=>`
+              <button class="reaction" data-post="${idx}" data-emoji="${emoji}" aria-pressed="false">${emoji} <span>${count}</span></button>
+            `).join('')}
+          </div>
+          <button class="btn ghost">Share</button>
+        </div>
+        <div class="commentbox">
+          <label for="c${idx}" class="sr-only">Add a comment</label>
+          <input id="c${idx}" type="text" placeholder="Comment something smart…">
+          <button class="btn postBtn" data-idx="${idx}">Post</button>
+        </div>
+        ${commentsHtml}
+      </article>
+    `;
+  }
+
+  function renderFeed(filter=null){
+    feed.innerHTML = posts
+      .filter(p=>!filter || p.tags.includes(filter))
+      .map(postTemplate)
+      .join('');
+    // Reactions
+    feed.querySelectorAll('.reaction').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const pressed = btn.getAttribute('aria-pressed')==='true';
+        const span = btn.querySelector('span');
+        let n = parseInt(span.textContent,10);
+        btn.setAttribute('aria-pressed', String(!pressed));
+        span.textContent = pressed ? (n-1) : (n+1);
+      });
+    });
+    // Comments
+    feed.querySelectorAll('.post .commentbox input').forEach(inp=>{
+      inp.addEventListener('keydown', e=>{
+        if(e.key==='Enter'){ e.preventDefault(); inp.nextElementSibling.click(); }
+      });
+    });
+    feed.querySelectorAll('.post .postBtn').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const idx = parseInt(btn.dataset.idx,10);
+        const input = btn.previousElementSibling;
+        const text = (input.value || '').trim();
+        if(!text) return;
+        posts[idx].comments.push({user:'@you', text});
+        let article = btn.closest('.post');
+        let empty = article.querySelector('.comment[data-empty="true"]');
+        if(empty) empty.remove();
+        const div = document.createElement('div');
+        div.className = 'comment';
+        div.innerHTML = `<strong>@you:</strong> ${text}`;
+        article.appendChild(div);
+        input.value = '';
+      });
+    });
+  }
+
+  document.querySelectorAll('.hashtag[data-hash]').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      const tag = h.dataset.hash;
+      renderFeed(tag);
+      document.querySelectorAll('.hashtag[data-hash]').forEach(x=>x.style.outline='none');
+      h.style.outline='var(--focus)';
+    });
+  });
+
+  /* ========= Trade modal ========= */
+  const modal = document.getElementById('tradeModal');
+  const closeModal = document.getElementById('closeModal');
+  const tradeSym = document.getElementById('tradeSym');
+  const unitPrice = document.getElementById('unitPrice');
+  const sideBuy = document.getElementById('sideBuy');
+  const sideSell = document.getElementById('sideSell');
+  const qtyInput = document.getElementById('qty');
+  const maxBtn = document.getElementById('maxBtn');
+  const confirmBtn = document.getElementById('confirmBtn');
+  const tradeError = document.getElementById('tradeError');
+  const toast = document.getElementById('toast');
+  let currentTrade = {sym:null, side:'Buy', unitCad:0, unitUsd:0, maxQty:0};
+
+  function setSide(side){
+    currentTrade.side = side;
+    sideBuy.setAttribute('aria-pressed', side==='Buy');
+    sideSell.setAttribute('aria-pressed', side==='Sell');
+  }
+  sideBuy.addEventListener('click', ()=>setSide('Buy'));
+  sideSell.addEventListener('click', ()=>setSide('Sell'));
+
+  function openTrade(sym){
+    const h = holdingsData.find(x=>x.sym===sym);
+    if(!h){ return; }
+    currentTrade.sym = sym;
+    currentTrade.unitCad = h.unitCad;
+    currentTrade.unitUsd = h.unitUsd;
+    currentTrade.maxQty = h.qty;
+    tradeSym.textContent = sym;
+    unitPrice.textContent = `${fmtCAD(h.unitCad)} • ${fmtUSD(h.unitUsd)}`;
+    qtyInput.value = 0;
+    setSide('Buy');
+    tradeError.classList.remove('show');
+    modal.classList.add('show');
+    qtyInput.focus();
+  }
+  function closeTrade(){ modal.classList.remove('show'); }
+  closeModal.addEventListener('click', closeTrade);
+  modal.addEventListener('click', (e)=>{ if(e.target===modal) closeTrade(); });
+
+  maxBtn.addEventListener('click', ()=>{
+    if(currentTrade.side==='Sell'){ qtyInput.value = currentTrade.maxQty; }
+  });
+
+  function showToast(){
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 1600);
+  }
+
+  confirmBtn.addEventListener('click', ()=>{
+    const q = parseFloat(qtyInput.value);
+    if(isNaN(q) || q<=0){
+      tradeError.textContent = 'Enter a quantity greater than 0.';
+      tradeError.classList.add('show');
+      return;
+    }
+    const h = holdingsData.find(x=>x.sym===currentTrade.sym);
+    if(!h){ tradeError.textContent = 'Unsupported asset in this demo.'; tradeError.classList.add('show'); return; }
+
+    if(currentTrade.side==='Sell'){
+      if(q > h.qty + 1e-9){
+        tradeError.textContent = `You can’t sell more than ${h.qty}.`;
+        tradeError.classList.add('show');
+        return;
+      }
+      h.qty = +(h.qty - q).toFixed(6);
+    }else{
+      h.qty = +(h.qty + q).toFixed(6);
+    }
+    h.cad = h.qty * h.unitCad;
+    h.usd = h.qty * h.unitUsd;
+
+    tradeError.classList.remove('show');
+    renderHoldings();
+    showToast();
+    closeTrade();
+  });
+
+  /* ========= Keyboard helpers ========= */
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='/' && document.activeElement.tagName!=='INPUT'){
+      e.preventDefault();
+      const order = ['home','portfolio','community','badges','profile'];
+      const current = order.findIndex(id => document.getElementById(id).classList.contains('active'));
+      const next = order[(current+1)%order.length];
+      activate(next);
+    }
+    if(e.key==='Escape' && modal.classList.contains('show')) closeTrade();
+  });
+
+  /* ========= Initialise (after everything exists) ========= */
+  function init(){
+    renderTicker();
+    renderQuick('all');
+    renderHoldings();
+    renderFeed();
+    setPrefer(prefer);   // finally apply saved currency and trigger re-renders
+    drawAllCharts();
+  }
+  init();
+</script>
+</body>
+</html>
